@@ -56,7 +56,7 @@
 			  Saved Searches
 			</a>
 			<a
-			  href="##"
+			  href="/dashboard/search"
 			  class="text-muted-foreground hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
 			>
 			  <Search class="h-4 w-4" />
@@ -114,7 +114,7 @@
 				Saved Searches
 			  </a>
 			  <a
-				href="##"
+				href="/dashboard/search"
 				class="text-muted-foreground hover:text-foreground mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2"
 			  >
 				<Search class="h-5 w-5" />
