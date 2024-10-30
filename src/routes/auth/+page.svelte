@@ -17,7 +17,7 @@
 		<div class="grid gap-4">
 		  <div class="grid gap-2">
 			<Label for="email">Email</Label>
-			<Input id="email" type="email" placeholder="m@example.com" required />
+			<Input id="email" type="email" name="email" placeholder="m@example.com" required />
 		  </div>
 		  <div class="grid gap-2">
 			<div class="flex items-center">
@@ -26,22 +26,22 @@
 				Forgot your password?
 			  </a>
 			</div>
-			<Input id="password" type="password" required />
+			<Input id="password" type="password" name="password" required />
 		  </div>
-		  <Button type="submit" class="w-full">Login</Button>
+		  <Button type="submit" class="w-full dbtn" formAction="?/login">Login</Button>
 		</div>
 		
 		<div class="mt-4 text-center text-sm">
 		  Don&apos;t have an account?
-		  <a href="##" class="underline"  formaction="?/signup"> Sign up </a>
+		  <a href="##" class="underline"  formAction="?/signup"> Sign up </a>
 		</div>
 	</form>
 	  </div>
 	</div>
 	<div class="bg-muted hidden lg:block">
 	  <img
-		src="/images/placeholder.svg"
-		alt="placeholder"
+		src="/images/auth.jpg"
+		alt="Outpost Leads Login"
 		width="1920"
 		height="1080"
 		class="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
