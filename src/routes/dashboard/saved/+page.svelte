@@ -23,7 +23,7 @@
 		<Table.Body>
 		 <Table.Row>
 		  <Table.Cell class="font-medium">Liquor store near Colorado Springs, CO</Table.Cell>
-		  <Table.Cell>2024-01-01</Table.Cell>
+		  <Table.Cell>11-01-2024</Table.Cell>
 		  <Table.Cell>
 			<Button size="sm" href="/dashboard/saved/1">View</Button>
 			<Button size="sm">Delete</Button>
@@ -31,7 +31,7 @@
 		 </Table.Row>
 		 <Table.Row>
 			<Table.Cell class="font-medium">restaurants store near Colorado Springs, CO</Table.Cell>
-			<Table.Cell>2024-11-01</Table.Cell>
+			<Table.Cell>11-01-2024</Table.Cell>
 			<Table.Cell>
 			  <Button size="sm" href="/dashboard/saved/1">View</Button>
 			  <AlertDialog.Root>

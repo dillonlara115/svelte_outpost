@@ -2,6 +2,7 @@
 	import * as Table from "$lib/components/ui/table";
 	import { Button } from '$lib/components/ui/button';
     import { Star, ExternalLink } from 'lucide-svelte';   
+    import { Badge } from '$lib/components/ui/badge';
    </script>
 
 <div class="flex flex-col items-center gap-1">
@@ -46,8 +47,11 @@
               </div>
             </Table.Cell>
             <Table.Cell>test@email.com</Table.Cell>
-            <Table.Cell>Yes</Table.Cell>
-            <Table.Cell>Veteran Owned</Table.Cell>
+            <Table.Cell><Badge variant="outline">Yes</Badge></Table.Cell>
+            <Table.Cell>	
+                <Badge>Veteran Owned</Badge>
+                
+                </Table.Cell>
            </Table.Row>
            <Table.Row>
             <Table.Cell class="font-medium">Liquor Plus</Table.Cell>
