@@ -55,7 +55,7 @@
 			  Find Leads
 			</a>
 			<a
-			  href="##"
+			  href="/dashboard/saved"
 			  class="text-muted-foreground hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
 			>
 			  <Building2 class="h-4 w-4" />
@@ -113,7 +113,7 @@
 				Find Leads
 			  </a>
 			  <a
-				href="##"
+				href="/dashboard/saved"
 				class="bg-muted text-foreground hover:text-foreground mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2"
 			  >
 				<Building2 class="h-5 w-5" />
