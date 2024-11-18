@@ -1,30 +1,24 @@
 <script lang="ts">
 	import CircleUser from "lucide-svelte/icons/circle-user";
-	import ChartLine from "lucide-svelte/icons/chart-line";
-	import Package from "lucide-svelte/icons/package";
 	import House from "lucide-svelte/icons/house";
-	import ShoppingCart from "lucide-svelte/icons/shopping-cart";
 	import Building2 from "lucide-svelte/icons/building-2";
 	import Menu from "lucide-svelte/icons/menu";
 	import Package2 from "lucide-svelte/icons/package-2";
 	import Search from "lucide-svelte/icons/search";
-	import Users from "lucide-svelte/icons/users";
   
-	import { Badge } from "$lib/components/ui/badge/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
 	import * as Sheet from "$lib/components/ui/sheet/index.js";
 
 	export let data;
 	$: ({ supabase } = data);
-
 	$: logout = async () => {
 		const { error } = await supabase.auth.signOut();
 		if (error) {
 			console.error(error);
 		}
+		window.location.href = '/';
 	};
 
   </script>
@@ -96,7 +90,7 @@
 			<nav class="grid gap-2 text-lg font-medium">
 			  <a href="##" class="flex items-center gap-2 text-lg font-semibold">
 				<Package2 class="h-6 w-6" />
-				<span class="sr-only">Acme Inc</span>
+				<span class="sr-only">Outpost Leads</span>
 			  </a>
 			  <a
 				href="##"
