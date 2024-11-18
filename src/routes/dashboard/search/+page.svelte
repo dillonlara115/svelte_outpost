@@ -2,6 +2,47 @@
     import { Label } from "$lib/components/ui/label";
       import { Input } from "$lib/components/ui/input";
 	import { Button } from '$lib/components/ui/button';
+	import { Badge } from '$lib/components/ui/badge';
+	import { ScrollArea } from '$lib/components/ui/scroll-area';
+	import * as Card from "$lib/components/ui/card/index.js";
+	import * as Table from "$lib/components/ui/table/index.js";
+	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+	import Ellipsis from "lucide-svelte/icons/ellipsis";
+	import SquareArrowOutUpRight from "lucide-svelte/icons/square-arrow-out-up-right";
+
+	let businesses: any[] = [];
+
+
+	async function getBusinesses() {
+		const response = await fetch('/api/businesses');
+		const data = await response.json();
+		businesses = data.businesses[0];
+		console.log(businesses);
+	}
+
+	const ownershipTypes = [
+        'Identifies as Asian-owned',
+        'Identifies as Black-owned',
+        'Identifies as disabled-owned',
+        'Identifies as Indigenous-owned',
+        'Identifies as Latino-owned',
+        'Identifies as LGBTQ+ owned',
+        'Identifies as veteran-owned',
+        'Identifies as women-owned',
+    ];
+
+    function getOwnershipStatus(business: any): string[] {
+        const statuses: string[] = [];
+        const fromBusiness = business.about?.['From the business'] || {};
+        
+        for (const type of ownershipTypes) {
+            if (fromBusiness[type] === true) {
+                statuses.push(type);
+            }
+        }
+        return statuses;
+    }
+
 </script>
 
 <div class="flex flex-col items-center gap-1">
@@ -11,21 +52,18 @@
 
 <div>
 	<form>
-			
+		<Label>City</Label>
+		<Input type="text" placeholder="Enter city" />
 
-				<Label>City</Label>
-					<Input type="text" placeholder="Enter city" />
+		<Label>State</Label>
+		<Input type="text" placeholder="Enter state" maxlength="2" />
 
-		
-				<Label>State</Label>
-					<Input type="text" placeholder="Enter state" maxlength="2" />
+		<Label>Zip Code</Label>
+		<Input type="text" placeholder="Enter zip code" maxlength="5" />
 
-				<Label>Zip Code</Label>
-					<Input type="text" placeholder="Enter zip code" maxlength="5" />
-
-				<Label>Business Type</Label>
-				<select class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mb-6">
-					<option value="" disabled selected>Select business type</option>
+		<Label>Business Type</Label>
+		<select class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mb-6">
+			<option value="" disabled selected>Select business type</option>
 					<option value="accountant">Accountant</option>
 					<option value="advertising_agency">Advertising Agency</option>
 					<option value="airline">Airline</option>
@@ -118,8 +156,93 @@
 					<option value="university">University</option>
 					<option value="veterinary_care">Veterinary Care</option>
 					<option value="zoo">Zoo</option>
-				</select>
+			</select>
 	</form>
 
 	<Button>Start Searching</Button>
+
+	{#await getBusinesses()}
+		<p class="mt-4">Loading...</p>
+	{:then}
+		<Card.Root class="w-full mt-4">
+			<Card.Header>
+				<Card.Title>Search Results</Card.Title>
+				<Card.Description>
+					View and manage your search results.
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<ScrollArea class="max-w-full whitespace-nowrap" orientation="horizontal">
+				<Table.Root>
+					<Table.Header>
+						<Table.Row>
+							<Table.Head>Logo</Table.Head>
+							<Table.Head>Name</Table.Head>
+							<Table.Head>Address</Table.Head>
+							<Table.Head>Phone</Table.Head>
+							<Table.Head>Rating</Table.Head>
+							<Table.Head>Reviews</Table.Head>
+							<Table.Head>Ownership</Table.Head>
+							<Table.Head>Verified</Table.Head>
+							
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{#each businesses as business}
+							<Table.Row>
+								<Table.Cell>
+									{#if business.logo}
+										<img 
+											src={`/api/proxy/image?url=${encodeURIComponent(business.logo)}`}
+											alt="Business"
+											class="w-30 h-30 rounded-md"
+											on:error={(e) => {
+												if (business.photo) {
+													e.target.src = `/api/proxy/image?url=${encodeURIComponent(business.photo)}`;
+												}
+											}}
+										/>
+									{:else if business.photo}
+										<img
+											src={`/api/proxy/image?url=${encodeURIComponent(business.photo)}`}
+											alt="Business" 
+											class="w-30 h-30 rounded-md"
+										/>
+									{/if}
+								</Table.Cell>
+								<Table.Cell class="font-medium">
+									{#if business.site}
+										<a href={business.site} target="_blank" rel="noreferrer">
+											{business.name} <SquareArrowOutUpRight size={14} />
+										</a>
+									{:else}
+										{business.name}
+									{/if}
+								</Table.Cell>
+								<Table.Cell>{business.address}</Table.Cell>
+								<Table.Cell><a href="tel:{business.phone}" class="hover:underline">{business.phone}</a></Table.Cell>
+								<Table.Cell>{business.rating}</Table.Cell>
+								<Table.Cell>{business.reviews}</Table.Cell>
+								<Table.Cell>
+									{#each getOwnershipStatus(business) as status}
+										<Badge>
+											{status.replace('Identifies as ', '')}
+										</Badge>
+									{/each}
+								</Table.Cell>
+								<Table.Cell>
+									<Badge variant="{business.verified ? 'secondary' : 'destructive'}">
+										{business.verified ? 'Verified' : 'Not Verified'}
+									</Badge>
+								</Table.Cell>
+							</Table.Row>
+						{/each}
+					</Table.Body>
+					</Table.Root>
+				</ScrollArea>
+			</Card.Content>
+		</Card.Root>
+	{:catch}
+		<p>Error loading businesses</p>
+	{/await}
 </div>
