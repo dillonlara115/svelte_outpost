@@ -3,16 +3,30 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from "$lib/components/ui/card";
 
-
 	export let data: PageData;
-	$: ({ user } = data);
+	
+	// Destructure data to get the user object
+	let user = data.user;
 
-	$: ({ max_saved_searches, current_searches_this_month, max_searches_per_month } = user);
+	// Default values for user fields, to handle the case when `user` is null
+	let max_saved_searches = 0;
+	let current_searches_this_month = 0;
+	let max_searches_per_month = 0;
+	let email = '';
+	let role_name = '';
+
+	// If `user` is not null, update the values accordingly
+	if (user) {
+		({ max_saved_searches, current_searches_this_month, max_searches_per_month, email } = user);
+		role_name = user.roles?.role_name ?? '';
+	}
 </script>
+
 
 <div class="flex flex-col items-center gap-1">
 	<h1 class="text-lg font-semibold md:text-2xl">Dashboard</h1>
-	<p>Logged in as: {user?.email}</p>
+	<p>Logged in as: {email}</p>
+	<p>Role: {role_name}</p>
 </div>
 
 
