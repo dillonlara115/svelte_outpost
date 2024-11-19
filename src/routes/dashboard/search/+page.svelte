@@ -43,6 +43,41 @@
         }
     }
 
+	async function saveSearch() {
+        const searchData = {
+            query: {
+                city: formData.city,
+                state: formData.state,
+                zipCode: formData.zipCode,
+                businessType: formData.businessType
+            },
+            results: businesses // Save current search results
+        };
+
+        try {
+            const response = await fetch('/dashboard/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(searchData)
+            });
+			
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to save search');
+            }
+
+            // Show success message
+            alert('Search saved successfully!');
+
+        } catch (error) {
+            console.error('Error saving search:', error);
+            alert(error.message);
+        }
+    }
+
     function handleSubmit() {
         getBusinesses();
     }
@@ -199,6 +234,11 @@
 				<Card.Description>
 					View and manage your search results.
 				</Card.Description>
+				<div class="flex justify-end">
+					<Button variant="outline" size="sm" on:click={saveSearch}>
+						Save Search
+					</Button>
+				</div>
 			</Card.Header>
 			<Card.Content>
 				<ScrollArea class="" orientation="horizontal" type="always">
