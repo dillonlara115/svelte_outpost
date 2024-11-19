@@ -10,6 +10,7 @@
 	import * as Card from "$lib/components/ui/card/index.js";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import * as Sheet from "$lib/components/ui/sheet/index.js";
+	import { page } from "$app/stores";
 
 	export let data;
 	$: ({ supabase } = data);
@@ -35,8 +36,9 @@
 		  <nav class="grid items-start px-2 text-sm font-medium lg:px-4">
 			<a
 			  href="/dashboard"
-			  class="bg-muted text-primary hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
-			  
+			  class="text-muted-foreground hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
+			  class:bg-muted ={$page.url.pathname === '/dashboard'}
+			  class:text-primary ={$page.url.pathname === '/dashboard'}
 			>
 			  <House class="h-4 w-4" />
 			  Dashboard
@@ -44,6 +46,8 @@
 			<a
 			  href="/dashboard/search"
 			  class="text-muted-foreground hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
+			  class:bg-muted ={$page.url.pathname === '/dashboard/search'}
+			  class:text-primary ={$page.url.pathname === '/dashboard/search'}
 			>
 			  <Search class="h-4 w-4" />
 			  Find Leads
@@ -51,6 +55,8 @@
 			<a
 			  href="/dashboard/saved"
 			  class="text-muted-foreground hover:text-primary flex items-center gap-3 rounded-lg px-3 py-2 transition-all"
+			  class:bg-muted ={$page.url.pathname === '/dashboard/saved'}
+			  class:text-primary ={$page.url.pathname === '/dashboard/saved'}
 			>
 			  <Building2 class="h-4 w-4" />
 			  Saved Searches
@@ -66,7 +72,10 @@
 			  </Card.Description>
 			</Card.Header>
 			<Card.Content class="p-2 pt-0 md:p-4 md:pt-0">
-			  <Button size="sm" class="w-full">Upgrade</Button>
+				<p class="text-muted-foreground text-sm text-center mb-3">
+					Coming soon!
+				</p>
+			  <Button size="sm" class="w-full" disabled>Upgrade</Button>
 			</Card.Content>
 		  </Card.Root>
 		</div>
@@ -94,7 +103,9 @@
 			  </a>
 			  <a
 				href="##"
-				class="text-muted-foreground hover:text-foreground mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2"
+				class="text-muted-foreground hover:text-primary mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2"
+				class:bg-muted ={$page.url.pathname === '/dashboard'}
+				class:text-primary ={$page.url.pathname === '/dashboard'}
 			  >
 				<House class="h-5 w-5" />
 				Dashboard
@@ -102,13 +113,17 @@
 			  <a
 				href="/dashboard/search"
 				class="text-muted-foreground hover:text-foreground mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2"
+				class:bg-muted ={$page.url.pathname === '/dashboard/search'}
+				class:text-primary ={$page.url.pathname === '/dashboard/search'}
 			  >
 				<Search class="h-5 w-5" />
 				Find Leads
 			  </a>
 			  <a
 				href="/dashboard/saved"
-				class="bg-muted text-foreground hover:text-foreground mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2"
+				class="text-muted-foreground hover:text-foreground mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2"
+				class:bg-muted ={$page.url.pathname === '/dashboard/saved'}
+				class:text-primary ={$page.url.pathname === '/dashboard/saved'}
 			  >
 				<Building2 class="h-5 w-5" />
 				Saved Searches
@@ -124,6 +139,9 @@
 				  </Card.Description>
 				</Card.Header>
 				<Card.Content>
+					<p class="text-muted-foreground text-sm text-center mb-3">
+						Coming soon!
+					</p>
 				  <Button size="sm" class="w-full">Upgrade</Button>
 				</Card.Content>
 			  </Card.Root>

@@ -70,6 +70,6 @@
 		<p class="text-muted-foreground text-sm">
 			Start finding leads for your business.
 		</p>
-		<Button class="mt-4">Start Searching</Button>
+		<Button class="mt-4" href="/dashboard/search">Start Searching</Button>
 	</div>
 </div>
