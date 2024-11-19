@@ -3,7 +3,13 @@ import Outscraper from 'outscraper';
 import { OUTSCRAPER_API_KEY } from '$env/static/private';
 
 export async function GET({ url }) {
-    const query = url.searchParams.get('query') || 'bars ny usa';
+    const city = url.searchParams.get('city');
+    const state = url.searchParams.get('state');
+    const zipCode = url.searchParams.get('zipCode');
+    const type = url.searchParams.get('type');
+
+    
+    const query = `${type} ${city} ${state} ${zipCode}`.trim();
     const client = new Outscraper(OUTSCRAPER_API_KEY);
 
     const response = await client.googleMapsSearch(

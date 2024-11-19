@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Label } from "$lib/components/ui/label";
-      import { Input } from "$lib/components/ui/input";
+    import { Input } from "$lib/components/ui/input";
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
@@ -11,14 +11,41 @@
 	import SquareArrowOutUpRight from "lucide-svelte/icons/square-arrow-out-up-right";
 
 	let businesses: any[] = [];
+    let loading = false;
+    let error = false;
 
+	let formData = {
+        city: '',
+        state: '',
+        zipCode: '',
+        businessType: ''
+    };
 
-	async function getBusinesses() {
-		const response = await fetch('/api/businesses');
-		const data = await response.json();
-		businesses = data.businesses[0];
-		console.log(businesses);
-	}
+    async function getBusinesses() {
+        loading = true;
+        error = false;
+        try {
+            // Build query string from form data
+            const params = new URLSearchParams({
+                city: formData.city,
+                state: formData.state,
+                zipCode: formData.zipCode,
+                type: formData.businessType
+            }).toString();
+
+            const response = await fetch(`/api/businesses?${params}`);
+            const data = await response.json();
+            businesses = data.businesses[0];
+        } catch (e) {
+            error = true;
+        } finally {
+            loading = false;
+        }
+    }
+
+    function handleSubmit() {
+        getBusinesses();
+    }
 
 	const ownershipTypes = [
         'Identifies as Asian-owned',
@@ -51,18 +78,18 @@
 </div>
 
 <div>
-	<form>
+	<form on:submit|preventDefault={handleSubmit}>
 		<Label>City</Label>
-		<Input type="text" placeholder="Enter city" />
+		<Input type="text" bind:value={formData.city} placeholder="Enter city" />
 
 		<Label>State</Label>
-		<Input type="text" placeholder="Enter state" maxlength="2" />
+		<Input type="text" bind:value={formData.state} placeholder="Enter state" maxlength="2" />
 
 		<Label>Zip Code</Label>
-		<Input type="text" placeholder="Enter zip code" maxlength="5" />
+		<Input type="text" bind:value={formData.zipCode} placeholder="Enter zip code" maxlength="5" />
 
 		<Label>Business Type</Label>
-		<select class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mb-6">
+		<select  bind:value={formData.businessType} class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mb-6">
 			<option value="" disabled selected>Select business type</option>
 					<option value="accountant">Accountant</option>
 					<option value="advertising_agency">Advertising Agency</option>
@@ -157,14 +184,16 @@
 					<option value="veterinary_care">Veterinary Care</option>
 					<option value="zoo">Zoo</option>
 			</select>
+
+        <Button type="submit">Start Searching</Button>
 	</form>
 
-	<Button>Start Searching</Button>
-
-	{#await getBusinesses()}
-		<p class="mt-4">Loading...</p>
-	{:then}
-		<Card.Root class="w-full mt-4">
+	{#if loading}
+		<p class="mt-4">Searching...</p>
+	{:else if error}
+		<p>Error searching for businesses</p>
+	{:else if businesses.length}
+		<Card.Root class="mt-4">
 			<Card.Header>
 				<Card.Title>Search Results</Card.Title>
 				<Card.Description>
@@ -172,30 +201,29 @@
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<ScrollArea class="max-w-full whitespace-nowrap" orientation="horizontal">
+				<ScrollArea class="" orientation="horizontal" type="always">
 				<Table.Root>
 					<Table.Header>
 						<Table.Row>
-							<Table.Head>Logo</Table.Head>
-							<Table.Head>Name</Table.Head>
-							<Table.Head>Address</Table.Head>
-							<Table.Head>Phone</Table.Head>
-							<Table.Head>Rating</Table.Head>
-							<Table.Head>Reviews</Table.Head>
-							<Table.Head>Ownership</Table.Head>
-							<Table.Head>Verified</Table.Head>
+							<Table.Head class="w-[150px]">Logo</Table.Head>
+							<Table.Head class="w-[175px]">Name</Table.Head>
+							<Table.Head class="w-[200px]">Address</Table.Head>
+							<Table.Head class="w-[100px]">Phone</Table.Head>
+							<Table.Head class="w-[100px]">Rating</Table.Head>
+							<Table.Head class="w-[100px]">Ownership</Table.Head>
+							<Table.Head class="w-[100px]">Verified</Table.Head>
 							
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each businesses as business}
+							</Table.Row>
+						</Table.Header>
+						<Table.Body>
+							{#each businesses as business}
 							<Table.Row>
 								<Table.Cell>
 									{#if business.logo}
 										<img 
 											src={`/api/proxy/image?url=${encodeURIComponent(business.logo)}`}
 											alt="Business"
-											class="w-30 h-30 rounded-md"
+											class="w-44 h-auto rounded-md"
 											on:error={(e) => {
 												if (business.photo) {
 													e.target.src = `/api/proxy/image?url=${encodeURIComponent(business.photo)}`;
@@ -206,7 +234,7 @@
 										<img
 											src={`/api/proxy/image?url=${encodeURIComponent(business.photo)}`}
 											alt="Business" 
-											class="w-30 h-30 rounded-md"
+											class="w-44 h-auto rounded-md"
 										/>
 									{/if}
 								</Table.Cell>
@@ -219,13 +247,12 @@
 										{business.name}
 									{/if}
 								</Table.Cell>
-								<Table.Cell>{business.address}</Table.Cell>
+								<Table.Cell>{business.full_address}</Table.Cell>
 								<Table.Cell><a href="tel:{business.phone}" class="hover:underline">{business.phone}</a></Table.Cell>
-								<Table.Cell>{business.rating}</Table.Cell>
-								<Table.Cell>{business.reviews}</Table.Cell>
+								<Table.Cell>{business.rating}<br/> based on {business.reviews} reviews</Table.Cell>
 								<Table.Cell>
 									{#each getOwnershipStatus(business) as status}
-										<Badge>
+										<Badge class="mb-2">
 											{status.replace('Identifies as ', '')}
 										</Badge>
 									{/each}
@@ -236,13 +263,12 @@
 									</Badge>
 								</Table.Cell>
 							</Table.Row>
-						{/each}
-					</Table.Body>
+							{/each}
+						</Table.Body>
 					</Table.Root>
+					
 				</ScrollArea>
 			</Card.Content>
 		</Card.Root>
-	{:catch}
-		<p>Error loading businesses</p>
-	{/await}
+	{/if}
 </div>

@@ -7,7 +7,7 @@
 	export let data: PageData;
 	$: ({ user } = data);
 
-	
+	$: ({ max_saved_searches, current_searches_this_month, max_searches_per_month } = user);
 </script>
 
 <div class="flex flex-col items-center gap-1">
@@ -24,7 +24,7 @@
 		<Card.Title class="text-sm font-medium">Saved Searches</Card.Title>
 	</Card.Header>
 	<Card.Content>
-		<div class="text-2xl font-bold">5</div>
+		<div class="text-2xl font-bold">{max_saved_searches}</div>
 		</Card.Content>
 	</Card.Root>
 	<Card.Root>
@@ -34,7 +34,7 @@
 			<Card.Title class="text-sm font-medium">Number of Searches Remaining</Card.Title>
 		</Card.Header>
 		<Card.Content>
-			<div class="text-2xl font-bold">3</div>
+			<div class="text-2xl font-bold">{max_searches_per_month - current_searches_this_month}</div>
 			</Card.Content>
 		</Card.Root>
 		<Card.Root>
