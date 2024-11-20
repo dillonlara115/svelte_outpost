@@ -1,24 +1,23 @@
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
 
 	let isLogin = true;
 </script>
-  
+
 <div class="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
 	<div class="flex items-center justify-center py-12">
 		<div class="mx-auto grid w-[350px] gap-6">
 			<div class="grid gap-2 text-center">
 				<h1 class="text-3xl font-bold">{isLogin ? 'Login' : 'Sign Up'}</h1>
-				<p class="text-muted-foreground text-balance">
-					{isLogin 
+				<p class="text-balance text-muted-foreground">
+					{isLogin
 						? 'Enter your email below to login to your account'
-						: 'Create an account to get started'
-					}
+						: 'Create an account to get started'}
 				</p>
 			</div>
-			<form method="POST" action={isLogin ? "?/login" : "?/signup"}>
+			<form method="POST" action={isLogin ? '?/login' : '?/signup'}>
 				<div class="grid gap-4">
 					<div class="grid gap-2">
 						<Label for="email">Email</Label>
@@ -39,16 +38,16 @@
 						{isLogin ? 'Login' : 'Sign Up'}
 					</Button>
 				</div>
-				
+
 				<div class="mt-4 text-center text-sm">
 					{#if isLogin}
 						Don't have an account?
-						<button type="button" class="underline" on:click={() => isLogin = false}>
+						<button type="button" class="underline" on:click={() => (isLogin = false)}>
 							Sign up
 						</button>
 					{:else}
 						Already have an account?
-						<button type="button" class="underline" on:click={() => isLogin = true}>
+						<button type="button" class="underline" on:click={() => (isLogin = true)}>
 							Login
 						</button>
 					{/if}
@@ -56,7 +55,7 @@
 			</form>
 		</div>
 	</div>
-	<div class="bg-muted hidden lg:block">
+	<div class="hidden bg-muted lg:block">
 		<img
 			src="/images/auth.jpg"
 			alt="Outpost Leads Login"
