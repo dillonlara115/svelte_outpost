@@ -19,11 +19,11 @@ export const actions: Actions = {
 			redirect(303, '/auth/error');
 		}
 
-		// Get the default role (member_basic)
+		// Get the default role (beta_user)
 		const { data: roleData } = await supabase
 			.from('roles')
 			.select('id')
-			.eq('role_name', 'member_basic')
+			.eq('role_name', 'beta_user')
 			.single();
 
 		if (!roleData?.id) {
