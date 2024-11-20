@@ -41,7 +41,7 @@
             <Table.Body>
                 {#each savedSearches as search}
                     <Table.Row>
-                        <Table.Cell class="font-medium">
+                        <Table.Cell class="font-medium capitalize">
                             {search.search_data.query.businessType} near {search.search_data.query.city}, {search.search_data.query.state}
                             {#if search.search_data.query.zipCode}
                                 ({search.search_data.query.zipCode})

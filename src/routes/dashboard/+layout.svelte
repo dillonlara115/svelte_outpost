@@ -84,17 +84,16 @@
 	<div class="flex flex-col">
 	  <header class="bg-muted/40 flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
 		<Sheet.Root>
-		  <Sheet.Trigger asChild let:builder>
-			<Button
-			  variant="outline"
-			  size="icon"
-			  class="shrink-0 md:hidden"
-			  builders={[builder]}
-			>
-			  <Menu class="h-5 w-5" />
-			  <span class="sr-only">Toggle navigation menu</span>
-			</Button>
-		  </Sheet.Trigger>
+			<Sheet.Trigger asChild>
+				<Button
+					variant="outline"
+					size="icon"
+					class="shrink-0 md:hidden"
+				>
+					<Menu class="h-5 w-5" />
+					<span class="sr-only">Toggle navigation menu</span>
+				</Button>
+			</Sheet.Trigger>
 		  <Sheet.Content side="left" class="flex flex-col">
 			<nav class="grid gap-2 text-lg font-medium">
 			  <a href="##" class="flex items-center gap-2 text-lg font-semibold">
@@ -166,9 +165,9 @@
 		  <DropdownMenu.Content align="end">
 			<DropdownMenu.Label>My Account</DropdownMenu.Label>
 			<DropdownMenu.Separator />
-			<DropdownMenu.Item>Settings</DropdownMenu.Item>
+			<!-- <DropdownMenu.Item>Settings</DropdownMenu.Item>
 			<DropdownMenu.Item>Support</DropdownMenu.Item>
-			<DropdownMenu.Separator />
+			<DropdownMenu.Separator /> -->
 			<DropdownMenu.Item on:click={logout}>Logout</DropdownMenu.Item>
 		  </DropdownMenu.Content>
 		</DropdownMenu.Root>

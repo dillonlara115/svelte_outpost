@@ -14,7 +14,7 @@ export async function GET({ url }) {
 
     const response = await client.googleMapsSearch(
         [query],
-            3,
+            20,
             'en',
             'US',
             0,
