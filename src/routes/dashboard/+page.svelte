@@ -47,18 +47,18 @@
 	</Card.Root>
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<Card.Title class="text-sm font-medium">Upgrade to Pro</Card.Title>
+			<Card.Title class="text-sm font-medium">Upgrade to Pro (Coming Soon!)</Card.Title>
 		</Card.Header>
 		<Card.Content>
 			<p class="text-xs text-muted-foreground">Unlock more saved searches and monthly searches.</p>
+			
 		</Card.Content>
 	</Card.Root>
 </div>
 
 <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
 	<div class="flex flex-col items-center gap-1 text-center">
-		<h3 class="text-2xl font-bold tracking-tight">You have no saved searches</h3>
-		<p class="text-sm text-muted-foreground">Start finding leads for your business.</p>
+		<h3 class="text-2xl font-bold tracking-tight">Start finding leads for your business.</h3>
 		<Button class="mt-4" href="/dashboard/search">Start Searching</Button>
 	</div>
 </div>

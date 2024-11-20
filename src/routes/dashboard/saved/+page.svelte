@@ -1,23 +1,42 @@
 <script lang="ts">
+    import { page } from '$app/stores';
 	import * as Table from '$lib/components/ui/table';
-	import { Button } from '$lib/components/ui/button';
+	import { invalidate } from '$app/navigation';
+	import { Button } from '$lib/components/ui/button';	
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+    import { supabase } from '$lib/supabaseClient.js';
 
-	export let data;
-	$: ({ savedSearches } = data);
+    export let data;
+    $: ({ savedSearches } = data);
 
-	async function deleteSearch(id: string) {
-		try {
-			const response = await fetch(`/dashboard/saved/${id}`, {
-				method: 'DELETE'
-			});
-			if (!response.ok) throw new Error('Failed to delete search');
-			// Refresh the list
-			window.location.reload();
-		} catch (e) {
-			console.error('Error deleting search:', e);
-		}
-	}
+    async function deleteSearch(searchId: string) {
+        try {
+            if (!$page.data.session?.user?.id) {
+                console.error('No session found');
+                return;
+            }
+
+            const { data: deleteData, error } = await data.supabase
+                .from('saved_searches')
+                .delete()
+                .match({ 
+                    id: searchId,
+                    user_id: $page.data.session.user.id
+                })
+                .select();
+
+            if (error) {
+                console.error('Error deleting search:', error);
+                return;
+            }
+
+            // Refresh the page data
+            await invalidate('supabase:db');  // This will trigger a reload of the data
+            
+        } catch (e) {
+            console.error('Exception in deleteSearch:', e);
+        }
+    }
 </script>
 
 <div class="flex flex-col items-center gap-1">
