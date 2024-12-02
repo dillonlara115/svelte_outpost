@@ -265,27 +265,29 @@
 {/if}
 <div>
 	<form on:submit|preventDefault={handleSubmit} class="dark">
-		<Label>City</Label>
-		<Input type="text" class="mb-2" bind:value={formData.city} placeholder="Enter city" />
+		<Label>City*</Label>
+		<Input type="text" class="mb-2" required bind:value={formData.city} placeholder="Enter city" />
 
-		<Label>State</Label>
+		<Label>State*</Label>
 		<Svelecte 
 			options={stateOptions}
 			bind:value={formData.state}
 			placeholder="Select state"
 			class="mb-2"
+			required
 			disabled={searchLimitReached}
 		/>
 
-		<Label>Zip Code</Label>
+		<Label>Zip Code(optional)</Label>
 		<Input type="text" class="mb-2" bind:value={formData.zipCode} placeholder="Enter zip code" />
 
-		<Label>Business Type</Label>
+		<Label>Business Type*</Label>
 		<Svelecte 
 			options={businessTypeOptions}
 			bind:value={formData.businessType}
 			placeholder="Select business type"
 			class="mb-2"
+			required
 			disabled={searchLimitReached}
 		/>
 
