@@ -12,6 +12,7 @@
 	import { supabase } from '$lib/supabaseClient';
 	import { page } from '$app/stores';
 	import * as Alert from '$lib/components/ui/alert/index.js';
+	import Svelecte from 'svelecte';
 
 	let businesses: any[] = [];
 	let loading = false;
@@ -44,6 +45,105 @@
 				});
 		}
 	}
+
+	const stateOptions = [
+        { value: 'AL', label: 'Alabama' },
+        { value: 'AK', label: 'Alaska' },
+        { value: 'AZ', label: 'Arizona' },
+        { value: 'AR', label: 'Arkansas' },
+        { value: 'CA', label: 'California' },
+        { value: 'CO', label: 'Colorado' },
+        { value: 'CT', label: 'Connecticut' },
+        { value: 'DE', label: 'Delaware' },
+        { value: 'FL', label: 'Florida' },
+        { value: 'GA', label: 'Georgia' },
+        { value: 'HI', label: 'Hawaii' },
+        { value: 'ID', label: 'Idaho' },
+        { value: 'IL', label: 'Illinois' },
+        { value: 'IN', label: 'Indiana' },
+        { value: 'IA', label: 'Iowa' },
+        { value: 'KS', label: 'Kansas' },
+        { value: 'KY', label: 'Kentucky' },
+        { value: 'LA', label: 'Louisiana' },
+        { value: 'ME', label: 'Maine' },
+        { value: 'MD', label: 'Maryland' },
+        { value: 'MA', label: 'Massachusetts' },
+        { value: 'MI', label: 'Michigan' },
+        { value: 'MN', label: 'Minnesota' },
+        { value: 'MS', label: 'Mississippi' },
+        { value: 'MO', label: 'Missouri' },
+        { value: 'MT', label: 'Montana' },
+        { value: 'NE', label: 'Nebraska' },
+        { value: 'NV', label: 'Nevada' },
+        { value: 'NH', label: 'New Hampshire' },
+        { value: 'NJ', label: 'New Jersey' },
+        { value: 'NM', label: 'New Mexico' },
+        { value: 'NY', label: 'New York' },
+        { value: 'NC', label: 'North Carolina' },
+        { value: 'ND', label: 'North Dakota' },
+        { value: 'OH', label: 'Ohio' },
+        { value: 'OK', label: 'Oklahoma' },
+        { value: 'OR', label: 'Oregon' },
+        { value: 'PA', label: 'Pennsylvania' },
+        { value: 'RI', label: 'Rhode Island' },
+        { value: 'SC', label: 'South Carolina' },
+        { value: 'SD', label: 'South Dakota' },
+        { value: 'TN', label: 'Tennessee' },
+        { value: 'TX', label: 'Texas' },
+        { value: 'UT', label: 'Utah' },
+        { value: 'VT', label: 'Vermont' },
+        { value: 'VA', label: 'Virginia' },
+        { value: 'WA', label: 'Washington' },
+        { value: 'WV', label: 'West Virginia' },
+        { value: 'WI', label: 'Wisconsin' },
+        { value: 'WY', label: 'Wyoming' }
+    ];
+
+
+	// Business type options array
+    const businessTypeOptions = [
+        { value: 'accountant', label: 'Accountant' },
+        { value: 'advertising_agency', label: 'Advertising Agency' },
+        { value: 'attorney', label: 'Attorney' },
+        { value: 'auto_dealer', label: 'Auto Dealer' },
+        { value: 'auto_repair', label: 'Auto Repair' },
+        { value: 'bank', label: 'Bank' },
+        { value: 'beauty_salon', label: 'Beauty Salon' },
+        { value: 'chiropractor', label: 'Chiropractor' },
+        { value: 'construction', label: 'Construction' },
+        { value: 'dentist', label: 'Dentist' },
+        { value: 'doctor', label: 'Doctor' },
+        { value: 'electrician', label: 'Electrician' },
+        { value: 'financial_advisor', label: 'Financial Advisor' },
+        { value: 'florist', label: 'Florist' },
+        { value: 'funeral_home', label: 'Funeral Home' },
+        { value: 'furniture_store', label: 'Furniture Store' },
+        { value: 'gym', label: 'Gym' },
+        { value: 'hair_salon', label: 'Hair Salon' },
+        { value: 'hardware_store', label: 'Hardware Store' },
+        { value: 'insurance_agency', label: 'Insurance Agency' },
+        { value: 'jewelry_store', label: 'Jewelry Store' },
+        { value: 'landscaping', label: 'Landscaping' },
+        { value: 'locksmith', label: 'Locksmith' },
+        { value: 'mortgage_broker', label: 'Mortgage Broker' },
+        { value: 'moving_company', label: 'Moving Company' },
+        { value: 'optometrist', label: 'Optometrist' },
+        { value: 'painter', label: 'Painter' },
+        { value: 'pest_control', label: 'Pest Control' },
+        { value: 'photographer', label: 'Photographer' },
+        { value: 'plumber', label: 'Plumber' },
+        { value: 'real_estate_agency', label: 'Real Estate Agency' },
+        { value: 'restaurant', label: 'Restaurant' },
+        { value: 'roofing', label: 'Roofing' },
+        { value: 'security_system', label: 'Security System' },
+        { value: 'spa', label: 'Spa' },
+        { value: 'storage', label: 'Storage' },
+        { value: 'tax_preparation', label: 'Tax Preparation' },
+        { value: 'travel_agency', label: 'Travel Agency' },
+        { value: 'veterinarian', label: 'Veterinarian' },
+        { value: 'web_design', label: 'Web Design' }
+    ];
+
 
 	console.log('max searches', session?.user?.max_searches_per_month);
 	console.log('current searches', session?.user?.current_searches_this_month);
@@ -164,154 +264,30 @@
 	</Alert.Root>
 {/if}
 <div>
-	<form on:submit|preventDefault={handleSubmit}>
+	<form on:submit|preventDefault={handleSubmit} class="dark">
 		<Label>City</Label>
 		<Input type="text" class="mb-2" bind:value={formData.city} placeholder="Enter city" />
 
 		<Label>State</Label>
-		<select
+		<Svelecte 
+			options={stateOptions}
 			bind:value={formData.state}
-			class="mb-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-		>
-			<option value="" disabled selected>Select state</option>
-			<option value="AL">Alabama</option>
-			<option value="AK">Alaska</option>
-			<option value="AZ">Arizona</option>
-			<option value="AR">Arkansas</option>
-			<option value="CA">California</option>
-			<option value="CO">Colorado</option>
-			<option value="CT">Connecticut</option>
-			<option value="DE">Delaware</option>
-			<option value="FL">Florida</option>
-			<option value="GA">Georgia</option>
-			<option value="HI">Hawaii</option>
-			<option value="ID">Idaho</option>
-			<option value="IL">Illinois</option>
-			<option value="IN">Indiana</option>
-			<option value="IA">Iowa</option>
-			<option value="KS">Kansas</option>
-			<option value="KY">Kentucky</option>
-			<option value="LA">Louisiana</option>
-			<option value="ME">Maine</option>
-			<option value="MD">Maryland</option>
-			<option value="MA">Massachusetts</option>
-			<option value="MI">Michigan</option>
-			<option value="MN">Minnesota</option>
-			<option value="MS">Mississippi</option>
-			<option value="MO">Missouri</option>
-			<option value="MT">Montana</option>
-			<option value="NE">Nebraska</option>
-			<option value="NV">Nevada</option>
-			<option value="NH">New Hampshire</option>
-			<option value="NJ">New Jersey</option>
-			<option value="NM">New Mexico</option>
-			<option value="NY">New York</option>
-			<option value="NC">North Carolina</option>
-			<option value="ND">North Dakota</option>
-			<option value="OH">Ohio</option>
-			<option value="OK">Oklahoma</option>
-			<option value="OR">Oregon</option>
-			<option value="PA">Pennsylvania</option>
-			<option value="RI">Rhode Island</option>
-			<option value="SC">South Carolina</option>
-			<option value="SD">South Dakota</option>
-			<option value="TN">Tennessee</option>
-			<option value="TX">Texas</option>
-			<option value="UT">Utah</option>
-			<option value="VT">Vermont</option>
-			<option value="VA">Virginia</option>
-			<option value="WA">Washington</option>
-			<option value="WV">West Virginia</option>
-		</select>
+			placeholder="Select state"
+			class="mb-2"
+			disabled={searchLimitReached}
+		/>
 
 		<Label>Zip Code</Label>
 		<Input type="text" class="mb-2" bind:value={formData.zipCode} placeholder="Enter zip code" />
 
 		<Label>Business Type</Label>
-		<select
+		<Svelecte 
+			options={businessTypeOptions}
 			bind:value={formData.businessType}
-			class="mb-6 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-		>
-			<option value="" disabled selected>Select business type</option>
-			<option value="accountant">Accountant</option>
-			<option value="advertising_agency">Advertising Agency</option>
-			<option value="amusement_park">Amusement Park</option>
-			<option value="aquarium">Aquarium</option>
-			<option value="art_gallery">Art Gallery</option>
-			<option value="attorney">Attorney</option>
-			<option value="bakery">Bakery</option>
-			<option value="bank">Bank</option>
-			<option value="bar">Bar</option>
-			<option value="beauty_salon">Beauty Salon</option>
-			<option value="bicycle_store">Bicycle Store</option>
-			<option value="book_store">Book Store</option>
-			<option value="bowling_alley">Bowling Alley</option>
-			<option value="cafe">Cafe</option>
-			<option value="campground">Campground</option>
-			<option value="car_dealer">Car Dealer</option>
-			<option value="car_rental">Car Rental</option>
-			<option value="car_repair">Car Repair</option>
-			<option value="car_wash">Car Wash</option>
-			<option value="church">Church</option>
-			<option value="city_hall">City Hall</option>
-			<option value="clothing_store">Clothing Store</option>
-			<option value="convenience_store">Convenience Store</option>
-			<option value="courthouse">Courthouse</option>
-			<option value="dentist">Dentist</option>
-			<option value="department_store">Department Store</option>
-			<option value="doctor">Doctor</option>
-			<option value="electrician">Electrician</option>
-			<option value="electronics_store">Electronics Store</option>
-			<option value="fire_station">Fire Station</option>
-			<option value="florist">Florist</option>
-			<option value="funeral_home">Funeral Home</option>
-			<option value="furniture_store">Furniture Store</option>
-			<option value="gas_station">Gas Station</option>
-			<option value="gym">Gym</option>
-			<option value="hair_care">Hair Care</option>
-			<option value="hardware_store">Hardware Store</option>
-			<option value="home_goods_store">Home Goods Store</option>
-			<option value="hospital">Hospital</option>
-			<option value="insurance_agency">Insurance Agency</option>
-			<option value="jewelry_store">Jewelry Store</option>
-			<option value="laundry">Laundry</option>
-			<option value="lawyer">Lawyer</option>
-			<option value="library">Library</option>
-			<option value="liquor_store">Liquor Store</option>
-			<option value="local_government_office">Local Government Office</option>
-			<option value="locksmith">Locksmith</option>
-			<option value="lodging">Lodging</option>
-			<option value="meal_delivery">Meal Delivery</option>
-			<option value="meal_takeaway">Meal Takeaway</option>
-			<option value="movie_rental">Movie Rental</option>
-			<option value="movie_theater">Movie Theater</option>
-			<option value="moving_company">Moving Company</option>
-			<option value="museum">Museum</option>
-			<option value="night_club">Night Club</option>
-			<option value="painter">Painter</option>
-			<option value="parking">Parking</option>
-			<option value="pet_store">Pet Store</option>
-			<option value="pharmacy">Pharmacy</option>
-			<option value="physiotherapist">Physiotherapist</option>
-			<option value="plumber">Plumber</option>
-			<option value="police">Police</option>
-			<option value="post_office">Post Office</option>
-			<option value="real_estate_agency">Real Estate Agency</option>
-			<option value="restaurant">Restaurant</option>
-			<option value="roofing_contractor">Roofing Contractor</option>
-			<option value="rv_park">RV Park</option>
-			<option value="school">School</option>
-			<option value="shoe_store">Shoe Store</option>
-			<option value="shopping_mall">Shopping Mall</option>
-			<option value="spa">Spa</option>
-			<option value="storage">Storage</option>
-			<option value="store">Store</option>
-			<option value="supermarket">Supermarket</option>
-			<option value="taxi_stand">Taxi Stand</option>
-			<option value="train_station">Train Station</option>
-			<option value="travel_agency">Travel Agency</option>
-			<option value="veterinary_care">Veterinary Care</option>
-		</select>
+			placeholder="Select business type"
+			class="mb-2"
+			disabled={searchLimitReached}
+		/>
 
 		<Button type="submit" disabled={searchLimitReached}>
 			{searchLimitReached ? 'Search Limit Reached' : 'Start Searching'}
