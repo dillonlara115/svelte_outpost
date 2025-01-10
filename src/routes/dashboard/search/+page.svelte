@@ -252,12 +252,12 @@
 	const ownershipTypes = [
 		'Identifies as Asian-owned',
 		'Identifies as Black-owned',
-		'Identifies as disabled-owned',
+		'Identifies as Disabled-owned',
 		'Identifies as Indigenous-owned',
 		'Identifies as Latino-owned',
 		'Identifies as LGBTQ+ owned',
-		'Identifies as veteran-owned',
-		'Identifies as women-owned'
+		'Identifies as Veteran-owned',
+		'Identifies as Women-owned'
 	];
 
 	function getOwnershipStatus(business: any): string[] {

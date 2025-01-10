@@ -2,14 +2,14 @@ import { json } from '@sveltejs/kit';
 import { OUTSCRAPER_API_KEY } from '$env/static/private';
 
 const ownershipAttributes = {
-	womenOwned: 'From+the+business.Identifies+as+women-owned',
+	womenOwned: 'From+the+business.Identifies+as+Women-owned',
 	asianOwned: 'From+the+business.Identifies+as+Asian-owned',
 	blackOwned: 'From+the+business.Identifies+as+Black-owned',
 	latinoOwned: 'From+the+business.Identifies+as+Latino-owned',
 	lgbtqOwned: 'From+the+business.Identifies+as+LGBTQ+-owned',
-	veteranOwned: 'From+the+business.Identifies+as+veteran-owned',
+	veteranOwned: 'From+the+business.Identifies+as+Veteran-owned',
 	indigenousOwned: 'From+the+business.Identifies+as+Indigenous-owned',
-	disabledOwned: 'From+the+business.Identifies+as+disabled-owned'
+	disabledOwned: 'From+the+business.Identifies+as+Disabled-owned'
 };
 
 export async function GET({ url }) {
