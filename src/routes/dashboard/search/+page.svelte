@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
+	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 	import { Button } from '$lib/components/ui/button';
+	import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
 	import { Badge } from '$lib/components/ui/badge';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
 	import * as Card from '$lib/components/ui/card/index.js';
@@ -11,6 +13,7 @@
 	import SquareArrowOutUpRight from 'lucide-svelte/icons/square-arrow-out-up-right';
 	import { supabase } from '$lib/supabaseClient';
 	import { page } from '$app/stores';
+	import StarRating from '$lib/components/StarRating.svelte';
 	import * as Alert from '$lib/components/ui/alert/index.js';
 	import Svelecte from 'svelecte';
 
@@ -23,7 +26,16 @@
 		city: '',
 		state: '',
 		zipCode: '',
-		businessType: ''
+		businessType: '',
+		womenOwned: false,
+		asianOwned: false,
+		blackOwned: false,
+		latinoOwned: false,
+		lgbtqOwned: false,
+		veteranOwned: false,
+		indigenousOwned: false,
+		disabledOwned: false,
+		verified: 'any'
 	};
 
 	$: session = $page.data.session;
@@ -160,15 +172,26 @@
 
 			// Continue with search if limit not reached
 			const params = new URLSearchParams({
-				city: formData.city,
-				state: formData.state,
-				zipCode: formData.zipCode,
-				type: formData.businessType
-			}).toString();
+			city: formData.city,
+			state: formData.state,
+			zipCode: formData.zipCode,
+			type: formData.businessType,
+			womenOwned: formData.womenOwned.toString(),
+			asianOwned: formData.asianOwned.toString(),
+			blackOwned: formData.blackOwned.toString(),
+			latinoOwned: formData.latinoOwned.toString(),
+			lgbtqOwned: formData.lgbtqOwned.toString(),
+			veteranOwned: formData.veteranOwned.toString(),
+			indigenousOwned: formData.indigenousOwned.toString(),
+			disabledOwned: formData.disabledOwned.toString(),
+			verified: formData.verified === 'any' ? '' : formData.verified,
+		}).toString();
 
 			const response = await fetch(`/api/businesses?${params}`);
 			const data = await response.json();
-			businesses = data.businesses[0];
+			console.log('Frontend received data:', data);
+			businesses = data.businesses || [];
+			console.log('Assigned businesses:', businesses);
 
 			// Only increment search count if we got results
 			if (businesses && businesses.length > 0) {
@@ -241,9 +264,9 @@
 		const statuses: string[] = [];
 		const fromBusiness = business.about?.['From the business'] || {};
 
-		for (const type of ownershipTypes) {
-			if (fromBusiness[type] === true) {
-				statuses.push(type);
+		for (const [key, value] of Object.entries(fromBusiness)) {
+			if (key.startsWith('Identifies as') && value === true) {
+				statuses.push(key);
 			}
 		}
 		return statuses;
@@ -290,6 +313,82 @@
 			required
 			disabled={searchLimitReached}
 		/>
+
+		<div class="mb-4">
+			<Label>Business Filters</Label>
+			<div class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+				<div class="flex items-center space-x-2">
+					<Checkbox id="womenOwned" bind:checked={formData.womenOwned} />
+					<Label for="womenOwned" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+						Women Owned
+					</Label>
+				</div>
+				<div class="flex items-center space-x-2">
+					<Checkbox id="asianOwned" bind:checked={formData.asianOwned} />
+					<Label for="asianOwned" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+						Asian Owned
+					</Label>
+				</div>
+				<div class="flex items-center space-x-2">
+					<Checkbox id="blackOwned" bind:checked={formData.blackOwned} />
+					<Label for="blackOwned" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+						Black Owned
+					</Label>
+				</div>
+				<div class="flex items-center space-x-2">
+					<Checkbox id="latinoOwned" bind:checked={formData.latinoOwned} />
+					<Label for="latinoOwned" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+						Latino Owned
+					</Label>
+				</div>
+				<div class="flex items-center space-x-2">
+					<Checkbox id="lgbtqOwned" bind:checked={formData.lgbtqOwned} />
+					<Label for="lgbtqOwned" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+						LGBTQ+ Owned
+					</Label>
+				</div>
+				<div class="flex items-center space-x-2">
+					<Checkbox id="veteranOwned" bind:checked={formData.veteranOwned} />
+					<Label for="veteranOwned" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+						Veteran Owned
+					</Label>
+				</div>
+				<div class="flex items-center space-x-2">
+					<Checkbox id="indigenousOwned" bind:checked={formData.indigenousOwned} />
+					<Label for="indigenousOwned" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+						Indigenous Owned
+					</Label>
+				</div>
+				<div class="flex items-center space-x-2">
+					<Checkbox id="disabledOwned" bind:checked={formData.disabledOwned} />
+					<Label for="disabledOwned" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+						Disabled Owned
+					</Label>
+				</div>
+			</div>
+			<div class="mb-4">
+				<Label>Google Verified Status</Label>
+				<RadioGroup.Root 
+					value={formData.verified} 
+					onValueChange={(value) => formData.verified = value}
+					class="grid gap-2"
+				>
+					<div class="flex items-center space-x-2">
+						<RadioGroup.Item value="any" id="verified-any" />
+						<Label for="verified-any">Show All</Label>
+					</div>
+					<div class="flex items-center space-x-2">
+						<RadioGroup.Item value="yes" id="verified-yes" />
+						<Label for="verified-yes">Verified Only</Label>
+					</div>
+					<div class="flex items-center space-x-2">
+						<RadioGroup.Item value="no" id="verified-no" />
+						<Label for="verified-no">Not Verified Only</Label>
+					</div>
+					<RadioGroup.Input name="verified" />
+				</RadioGroup.Root>
+			</div>
+		</div>
 
 		<Button type="submit" disabled={searchLimitReached}>
 			{searchLimitReached ? 'Search Limit Reached' : 'Start Searching'}
@@ -338,17 +437,18 @@
 									<Table.Cell class="font-medium">
 										{#if business.site}
 											<a href={business.site} target="_blank" rel="noreferrer">
-												{business.name}
+												{business.display_name}
 												<SquareArrowOutUpRight size={14} />
 											</a>
 										{:else}
-											{business.name}
+											{business.display_name}
 										{/if}
 									</Table.Cell>
-									<Table.Cell>{business.full_address}</Table.Cell>
-									<Table.Cell
-										>{business.rating}<br /> based on {business.reviews} reviews</Table.Cell
-									>
+									<Table.Cell>{business.address}</Table.Cell>
+									<Table.Cell>
+										<StarRating rating={business.rating} />
+										<br /> based on {business.reviews} reviews
+									</Table.Cell>
 									<Table.Cell>
 										{#each getOwnershipStatus(business) as status}
 											<Badge class="mb-2">
