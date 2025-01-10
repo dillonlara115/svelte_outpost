@@ -252,7 +252,7 @@
 	const ownershipTypes = [
 		'Identifies as Asian-owned',
 		'Identifies as Black-owned',
-		'Identifies as Disabled-owned',
+		'Identifies as isabled-owned',
 		'Identifies as Indigenous-owned',
 		'Identifies as Latino-owned',
 		'Identifies as LGBTQ+ owned',

@@ -6,10 +6,10 @@ const ownershipAttributes = {
 	asianOwned: 'From+the+business.Identifies+as+Asian-owned',
 	blackOwned: 'From+the+business.Identifies+as+Black-owned',
 	latinoOwned: 'From+the+business.Identifies+as+Latino-owned',
-	lgbtqOwned: 'From+the+business.Identifies+as+LGBTQ+-owned',
-	veteranOwned: 'From+the+business.Identifies+as+Veteran-owned',
+	lgbtqOwned: 'From+the+business.Identifies+as+LGBTQ%2B+owned',
+	veteranOwned: 'From+the+business.Identifies+as+veteran-owned',
 	indigenousOwned: 'From+the+business.Identifies+as+Indigenous-owned',
-	disabledOwned: 'From+the+business.Identifies+as+Disabled-owned'
+	disabledOwned: 'From+the+business.Identifies+as+disabled-owned'
 };
 
 export async function GET({ url }) {
