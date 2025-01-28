@@ -2,8 +2,15 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
+	import * as RadioGroup from "$lib/components/ui/radio-group";
 
 	let isLogin = true;
+	let selectedPlan = 'prod_RclJpzqmjs07Uu'; // Default to Standard Plan
+
+	function handlePlanChange(event: Event) {
+		const target = event.target as HTMLInputElement;
+		selectedPlan = target.value;
+	}
 </script>
 
 <div class="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
@@ -17,7 +24,7 @@
 						: 'Create an account to get started'}
 				</p>
 			</div>
-			<form method="POST" action={isLogin ? '?/login' : '?/signup'}>
+			<form method="POST" action={isLogin ? '?/login' : '?/signup'} on:submit={() => console.log('Form submitted')}>
 				<div class="grid gap-4">
 					<div class="grid gap-2">
 						<Label for="email">Email</Label>
@@ -34,6 +41,23 @@
 						</div>
 						<Input id="password" type="password" name="password" required />
 					</div>
+					{#if !isLogin}
+						<div class="grid gap-2">
+							<Label>Select Plan</Label>
+							<div class="flex gap-4">
+								<label class="flex-1 cursor-pointer rounded border p-4 hover:bg-muted">
+									<input type="radio" name="priceId" value={import.meta.env.DEV ? 'price_1QjVoaB8sVzGezu0kfetCOuV' : 'price_1QjVmwB8sVzGezu02fSPx4ud'} bind:group={selectedPlan} on:change={handlePlanChange} required />
+									<div class="text-lg font-semibold">Standard Plan</div>
+									<div class="text-sm text-muted-foreground">$20/month</div>
+								</label>
+								<label class="flex-1 cursor-pointer rounded border p-4 hover:bg-muted">
+									<input type="radio" name="priceId" value={import.meta.env.DEV ? 'price_1QjVoxB8sVzGezu0olflndDZ' : 'price_1QjVnQB8sVzGezu0lZyVFAYQ'} bind:group={selectedPlan} on:change={handlePlanChange} required />
+									<div class="text-lg font-semibold">Business Pro Plan</div>
+									<div class="text-sm text-muted-foreground">$50/month</div>
+								</label>
+							</div>
+						</div>
+					{/if}
 					<Button type="submit" class="w-full">
 						{isLogin ? 'Login' : 'Sign Up'}
 					</Button>
