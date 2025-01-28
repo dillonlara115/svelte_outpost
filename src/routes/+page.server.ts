@@ -30,8 +30,8 @@ export const actions: Actions = {
 					},
 				],
 				mode: 'subscription',
-				success_url: `${mainUrl}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-				cancel_url: `${mainUrl}`,
+				success_url: `${mainUrl}/?session_id={CHECKOUT_SESSION_ID}&status=success`,
+				cancel_url: `${mainUrl}/?session_id={CHECKOUT_SESSION_ID}&status=cancel`,
 				metadata: {
 					email: email,
 					password: password,

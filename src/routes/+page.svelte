@@ -3,7 +3,8 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as RadioGroup from "$lib/components/ui/radio-group";
-
+	import * as Alert from "$lib/components/ui/alert";
+	import CircleAlert from "lucide-svelte/icons/circle-alert";
 	let isLogin = true;
 	let selectedPlan = 'prod_RclJpzqmjs07Uu'; // Default to Standard Plan
 
@@ -11,11 +12,30 @@
 		const target = event.target as HTMLInputElement;
 		selectedPlan = target.value;
 	}
+
+	import { page } from '$app/state';
+  const status = page.url.searchParams.get('status');
 </script>
 
 <div class="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
 	<div class="flex items-center justify-center py-12">
 		<div class="mx-auto grid w-[350px] gap-6">
+			{#if status === 'success'}
+  <Alert.Root>
+    <Alert.Title>Your Account is Ready!</Alert.Title>
+    <Alert.Description>
+      Your account has been created and you can now login.
+    </Alert.Description>
+  </Alert.Root>
+{:else if status === 'cancel'}
+  <Alert.Root variant="destructive">
+    <CircleAlert class="h-4 w-4" />
+    <Alert.Title>Payment Cancelled</Alert.Title>
+    <Alert.Description>
+      Your payment was cancelled. Please try again if you would like to create an account or <a href="mailto:hello@outpostleads.com" class="link">contact support</a> if you have any questions.
+    </Alert.Description>
+  </Alert.Root>
+{/if}
 			<div class="grid gap-2 text-center">
 				<h1 class="text-3xl font-bold">{isLogin ? 'Login' : 'Sign Up'}</h1>
 				<p class="text-balance text-muted-foreground">
