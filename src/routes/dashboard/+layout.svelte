@@ -146,7 +146,7 @@
 					</Button>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end">
-					<DropdownMenu.Label>My Account</DropdownMenu.Label>
+					<DropdownMenu.Item><a href="/dashboard/account">My Account</a></DropdownMenu.Item>
 					<DropdownMenu.Separator />
 					<!-- <DropdownMenu.Item>Settings</DropdownMenu.Item>
 			<DropdownMenu.Item>Support</DropdownMenu.Item>
