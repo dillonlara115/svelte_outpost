@@ -4,6 +4,17 @@
    export let data: PageData;
    
    $: ({ user } = data);
+
+   async function openCustomerPortal() {
+    const response = await fetch('/dashboard/account', { method: 'POST' });
+    const data = await response.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Failed to open customer portal');
+    }
+  }
 </script>
 
 <div class="container mx-auto px-4 py-8">
@@ -20,7 +31,7 @@
 
            <div class="mb-6">
                <h2 class="text-xl font-semibold mb-2">Account Settings</h2>
-          
+               <button class="bg-blue-500 text-white px-4 py-2 rounded" on:click={openCustomerPortal}>Open Customer Portal</button>
            </div>
        </div>
    {:else}
