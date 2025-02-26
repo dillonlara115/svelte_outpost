@@ -7,11 +7,20 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import logger from '$lib/utils/logger';
 import { supabase } from '$lib/supabaseClient';
 
-const stripe = new Stripe(PRIVATE_STRIPE_SECRET_KEY);
+const roleMapping = {
+	'price_1QjVoaB8sVzGezu0kfetCOuV': 'e9fee1d7-17ff-4b62-81ec-1fa8ac7332ec', // Standard Plan (dev)
+	'price_1QjVmwB8sVzGezu02fSPx4ud': 'e9fee1d7-17ff-4b62-81ec-1fa8ac7332ec', // Standard Plan (prod)
+	'price_1QjVoxB8sVzGezu0olflndDZ': 'a0317245-b139-4589-9fb8-777b7dc4aaaf', // Business Pro Plan (dev)
+	'price_1QjVnQB8sVzGezu0lZyVFAYQ': 'a0317245-b139-4589-9fb8-777b7dc4aaaf', // Business Pro Plan (prod)
+} as const;
 
-function fulfillOrder(lineItems: Stripe.ApiList<Stripe.LineItem>) {
-	console.log('Fullfilling order: ', lineItems);
-}
+export const config = {
+	api: {
+		 bodyParser: false // Disable body parsing for this route
+	}
+};
+
+const stripe = new Stripe(PRIVATE_STRIPE_SECRET_KEY);
 
 export const POST: RequestHandler = async ({ request }) => {
 	logger.info('[payment webhook] Received a webhook request from Stripe.');
@@ -67,71 +76,60 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	if (event.type === 'checkout.session.completed') {
-		logger.info('[CHECKOUT SESSION COMPLETED]');
+		logger.info('[payment webhook] Processing checkout.session.completed event');
+		const session = event.data.object as Stripe.Checkout.Session;
+		const email = session.metadata?.email;
+		
+		if (!email) {
+			logger.error('[payment webhook] No email found in session metadata');
+			return json({ error: 'Email not found' }, { status: 500 });
+		}
+		
+		logger.info('[payment webhook] Updating user role for:', { email });
+
+		// Get the price ID and role mapping
 		const sessionWithItems = await stripe.checkout.sessions.retrieve(
-			event.data.object.id,
+			session.id,
 			{
 				expand: ['line_items']
 			}
 		);
-		const session = event.data.object as Stripe.Checkout.Session;
+		const lineItems = sessionWithItems.line_items?.data;
+		const priceId = lineItems ? lineItems[0]?.price?.id : null;
 
-		  // Extract the price ID from the line items
-		  const lineItems = sessionWithItems.line_items?.data;
-		  const priceId = lineItems ? lineItems[0].price.id : null;
-	  
-		  if (!priceId) {
-			console.error('Price ID not found in line items');
+		if (!priceId) {
+			logger.error('[payment webhook] No price ID found in line items');
 			return json({ error: 'Price ID not found' }, { status: 500 });
-		  }
-	  
-		  // Map the price ID to a user role
-		  const roleMapping = {
-			'price_1QjVoaB8sVzGezu0kfetCOuV': 'e9fee1d7-17ff-4b62-81ec-1fa8ac7332ec',
-			'price_1QjVmwB8sVzGezu02fSPx4ud': 'e9fee1d7-17ff-4b62-81ec-1fa8ac7332ec',
-			'price_1QjVoxB8sVzGezu0olflndDZ': 'a0317245-b139-4589-9fb8-777b7dc4aaaf',
-			'price_1QjVnQB8sVzGezu0lZyVFAYQ': 'a0317245-b139-4589-9fb8-777b7dc4aaaf',
-			// Add more mappings as needed
-		  } as const;
-	  
-		  const userRole = roleMapping[priceId as keyof typeof roleMapping];
-	  
-		  if (!userRole) {
-			console.error('No user role found for price ID:', priceId);
-			return json({ error: 'No user role found for price ID' }, { status: 500 });
-		  }
+		}
 
-    // Extract the password from metadata
-    const password = session.metadata.password;
-    const email = session.metadata.email;
+		const userRole = roleMapping[priceId as keyof typeof roleMapping];
+		
+		if (!userRole) {
+			logger.error('[payment webhook] No role mapping found for price:', priceId);
+			return json({ error: 'No role mapping found' }, { status: 500 });
+		}
 
-    // Create user in Supabase auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+		logger.info('[payment webhook] Updating user role:', {
+			email,
+			roleId: userRole
+		});
 
-    if (authError) {
-      console.error('Error creating user in Supabase:', authError);
-      return json({ error: 'Error creating user in Supabase' }, { status: 500 });
-    }
+		// Update the user's role
+		const { error: updateError } = await supabase
+			.from('users')
+			.update({
+				role_id: userRole,
+				updated_at: new Date().toISOString()
+			})
+			.eq('email', email);
 
-    // Insert user into the custom users table
-    const { error: insertError } = await supabase
-      .from('users')
-      .insert({
-        id: authData.user.id, // Use the auth user ID
-        email: email,
-        role_id: userRole, // Use the mapped role ID
-        // Add any other fields you need
-      });
+		if (updateError) {
+			logger.error('[payment webhook] Failed to update user role:', updateError);
+			return json({ error: 'Failed to update user role' }, { status: 500 });
+		}
 
-    if (insertError) {
-      console.error('Error inserting user into custom users table:', insertError);
-      return json({ error: 'Error inserting user into custom users table' }, { status: 500 });
-    }
-
-    console.log('User created in Supabase with role:', authData);
-  }
+		logger.success('[payment webhook] Successfully updated user role');
+		return json({ success: true });
+	}
 	return json({ received: true });
 };

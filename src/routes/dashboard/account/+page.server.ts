@@ -1,5 +1,4 @@
-import { error, json } from '@sveltejs/kit';
-import Stripe from 'stripe';
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals: { supabase } }) => {

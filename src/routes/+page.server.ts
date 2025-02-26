@@ -50,18 +50,23 @@ export const actions: Actions = {
             const stripeCustomerId = customer.id;
             console.log('Stripe customer created:', stripeCustomerId);
 
-            // Step 3: Store stripe_customer_id in Supabase users table
-            const { error: userTableError } = await supabase
+            // Step 3: Create initial users table entry
+            const { error: createUserError } = await supabase
                 .from('users')
-                .update({ stripe_customer_id: stripeCustomerId })
-                .eq('id', userId);
+                .insert({
+                    id: userId,
+                    email: email,
+                    stripe_customer_id: stripeCustomerId,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                });
 
-            if (userTableError) {
-                console.error('Failed to update stripe_customer_id in Supabase:', userTableError);
-                return fail(500, { message: 'Failed to save Stripe customer ID' });
+            if (createUserError) {
+                console.error('Failed to create user in users table:', createUserError);
+                return fail(500, { message: 'Failed to create user entry' });
             }
 
-            console.log('Stripe customer ID saved in Supabase');
+            console.log('User entry created in users table');
 
             // Step 4: Create a Stripe Checkout session
             const session = await stripe.checkout.sessions.create({
@@ -77,7 +82,8 @@ export const actions: Actions = {
                 success_url: `${mainUrl}/?session_id={CHECKOUT_SESSION_ID}&status=success`,
                 cancel_url: `${mainUrl}/?session_id={CHECKOUT_SESSION_ID}&status=cancel`,
                 metadata: {
-                    email
+                    email,
+                    password
                 }
             });
 
