@@ -14,6 +14,17 @@ const roleMapping = {
 	'price_1QjVnQB8sVzGezu0lZyVFAYQ': 'a0317245-b139-4589-9fb8-777b7dc4aaaf', // Business Pro Plan (prod)
 } as const;
 
+const planLimits = {
+	'e9fee1d7-17ff-4b62-81ec-1fa8ac7332ec': { // Standard Plan
+		max_searches_per_month: 20,
+		max_saved_searches: 10
+	},
+	'a0317245-b139-4589-9fb8-777b7dc4aaaf': { // Business Pro Plan
+		max_searches_per_month: 500,
+		max_saved_searches: 50
+	}
+} as const;
+
 export const config = {
 	api: {
 		 bodyParser: false // Disable body parsing for this route
@@ -103,6 +114,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		const userRole = roleMapping[priceId as keyof typeof roleMapping];
+		const limits = planLimits[userRole];
 		
 		if (!userRole) {
 			logger.error('[payment webhook] No role mapping found for price:', priceId);
@@ -114,11 +126,14 @@ export const POST: RequestHandler = async ({ request }) => {
 			roleId: userRole
 		});
 
-		// Update the user's role
+		// Update the user's role and limits
 		const { error: updateError } = await supabase
 			.from('users')
 			.update({
 				role_id: userRole,
+				max_searches_per_month: limits.max_searches_per_month,
+				max_saved_searches: limits.max_saved_searches,
+				current_searches_this_month: 0,
 				updated_at: new Date().toISOString()
 			})
 			.eq('email', email);
