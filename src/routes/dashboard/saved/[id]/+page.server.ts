@@ -20,6 +20,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase } }) => 
 	if (searchError || !savedSearch) {
 		throw error(404, 'Saved search not found');
 	}
+	console.log('Saved search results:', savedSearch.search_data);
 
 	return {
 		savedSearch

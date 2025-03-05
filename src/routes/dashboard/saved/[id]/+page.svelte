@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
 	import { Button } from '$lib/components/ui/button';
-	import { Star, ExternalLink, StarHalf } from 'lucide-svelte';
+	import { Star, ExternalLink, StarHalf, Phone } from 'lucide-svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
@@ -21,14 +21,14 @@
 	</div>
 
 	<Card.Content>
-		<ScrollArea class="" type="always">
+		<ScrollArea class="w-full overflow-x-auto relative" type="always" orientation="both">
 			<div class="">
-				<Table.Root>
+				<Table.Root class="relative">
 					<Table.Header>
 						<Table.Row>
-							<Table.Head class="min-w-[150px]">Logo</Table.Head>
+							<Table.Head class="min-w-[150px]">Image</Table.Head>
 							<Table.Head class="w-[175px]">Name</Table.Head>
-							<Table.Head class="w-[200px]">Address</Table.Head>
+							<Table.Head class="min-w-[200px]">Address</Table.Head>
 							<Table.Head class="min-w-[100px]">Phone</Table.Head>
 							<Table.Head class="w-[100px]">Rating</Table.Head>
 							<Table.Head class="w-[100px]">Ownership</Table.Head>
@@ -47,13 +47,13 @@
 									/>
 								</Table.Cell>
 								<Table.Cell class="font-medium">
-									{business.name}
+									{business.display_name}
 								</Table.Cell>
 								<Table.Cell>
-									{business.full_address}
+									{business.address}
 									{#if business.location_link}
 										<a
-											href={business.location_link}
+											href={business.gmb_link}
 											target="_blank"
 											rel="noopener noreferrer"
 											class="ml-1 inline-flex items-center"
@@ -62,7 +62,11 @@
 										</a>
 									{/if}
 								</Table.Cell>
-								<Table.Cell>{business.phone || 'N/A'}</Table.Cell>
+								<Table.Cell> <a
+									href="tel:{business.phone}"
+									class="inline-flex items-center gap-1 text-primary hover:underline">
+									{'+1 (' + business.phone.slice(0,3) + ') ' + business.phone.slice(3,6) + '-' + business.phone.slice(6)}</a
+								></Table.Cell>
 								<Table.Cell>
 									<div class="flex flex-col items-center">
 										{business.rating}
@@ -86,7 +90,7 @@
 									{#if business.about?.['From the business']}
 										{#each Object.entries(business.about['From the business']) as [type, value]}
 											{#if value === true && type.includes('Identifies as')}
-												<Badge class="mr-1">
+												<Badge class="mr-1 mb-2">
 													{type.replace('Identifies as ', '')}
 												</Badge>
 											{/if}
@@ -100,11 +104,11 @@
 								</Table.Cell>
 								<Table.Cell>
 									<Dialog.Root>
-										<Dialog.Trigger>View</Dialog.Trigger>
+										<Dialog.Trigger class="btn btn-primary btn-sm">View</Dialog.Trigger>
 										<Dialog.Content>
 											<Dialog.Header>
 												<Dialog.Title
-													>{business.name}
+													>{business.display_name}
 													<Badge variant={business.verified ? 'default' : 'outline'}>
 														{business.verified ? 'GBP Verified' : 'Not GBP Verified'}
 													</Badge></Dialog.Title
@@ -121,14 +125,14 @@
 															<div>
 																<h4 class="font-semibold">Contact</h4>
 
-																{#if business.location_link}
+																{#if business.gmb_link}
 																	<p>
 																		<a
-																			href={business.location_link}
+																			href={business.gmb_link}
 																			target="_blank"
 																			rel="noopener noreferrer"
 																			class="inline-flex items-center text-primary hover:underline"
-																			>{business.full_address} <ExternalLink size={14} />
+																			>{business.address} <ExternalLink size={14} />
 																		</a>
 																	</p>
 																{/if}
@@ -136,7 +140,9 @@
 																	<p>
 																		<a
 																			href="tel:{business.phone}"
-																			class="text-primary hover:underline">{business.phone}</a
+																			class="inline-flex items-center gap-1 text-primary hover:underline">
+																			<Phone size={14} />
+																			{'+1 (' + business.phone.slice(0,3) + ') ' + business.phone.slice(3,6) + '-' + business.phone.slice(6)}</a
 																		>
 																	</p>
 																{:else}

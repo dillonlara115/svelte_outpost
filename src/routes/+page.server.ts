@@ -23,58 +23,50 @@ export const actions: Actions = {
         const mainUrl = process.env.NODE_ENV === 'production' ? PUBLIC_URL_PROD : PUBLIC_URL_DEV;
 
         try {
-            // Step 1: Create User in Supabase Auth
-            const { data: authData, error: authError } = await supabase.auth.signUp({
-                email,
-                password
-            });
-
-            if (authError) {
-                console.error('Supabase Auth error:', authError);
-                return fail(400, { message: 'Failed to create user in Supabase Auth' });
-            }
-
-            const userId = authData.user?.id;
-            if (!userId) {
-                console.error('No user ID returned from Supabase Auth');
-                return fail(500, { message: 'User creation failed' });
-            }
-
-            console.log('User created in Supabase Auth:', userId);
-
-            // Step 2: Create Stripe Customer
-            const customer = await stripe.customers.create({
-                email
-            });
-
-            const stripeCustomerId = customer.id;
-            console.log('Stripe customer created:', stripeCustomerId);
-
-            // Step 3: Create initial users table entry
-            const { error: createUserError } = await supabase
+            // Step 1: Check if user already exists in Supabase
+            const { data: existingUser, error: fetchError } = await supabase
                 .from('users')
-                .insert({
-                    id: userId,
-                    email: email,
-                    stripe_customer_id: stripeCustomerId,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
+                .select('id, stripe_customer_id')
+                .eq('email', email)
+                .single();
+
+            let stripeCustomerId = existingUser?.stripe_customer_id;
+
+            // Step 2: If user doesn't have a Stripe customer, create one
+            if (!stripeCustomerId) {
+                console.log('Creating new Stripe customer...');
+                const customer = await stripe.customers.create({
+                    email
                 });
 
-            if (createUserError) {
-                console.error('Failed to create user in users table:', createUserError);
-                return fail(500, { message: 'Failed to create user entry' });
+                stripeCustomerId = customer.id;
+
+                if (existingUser) {
+                    // If user exists in Supabase, update stripe_customer_id
+                    await supabase
+                        .from('users')
+                        .update({ stripe_customer_id: stripeCustomerId })
+                        .eq('id', existingUser.id);
+                } else {
+                    // If user doesn't exist, create one (this assumes you want to manually insert it)
+                    const { data: newUser, error: createError } = await supabase
+                        .from('users')
+                        .insert([{ email, stripe_customer_id: stripeCustomerId }]);
+
+                    if (createError) {
+                        console.error('Failed to create user in Supabase:', createError);
+                        return fail(500, { message: 'Failed to create user' });
+                    }
+                }
             }
 
-            console.log('User entry created in users table');
-
-            // Step 4: Create a Stripe Checkout session
+            // Step 3: Create a Stripe Checkout session
             const session = await stripe.checkout.sessions.create({
-                customer: stripeCustomerId,
+                customer: stripeCustomerId, // Attach existing or new Stripe customer ID
                 payment_method_types: ['card'],
                 line_items: [
                     {
-                        price: priceId,
+                        price: priceId, // Use the selected plan
                         quantity: 1
                     }
                 ],
@@ -109,5 +101,19 @@ export const actions: Actions = {
         }
 
         return redirect(303, sessionUrl);
+    },
+
+    login: async ({ request, locals: { supabase } }) => {
+        const formData = await request.formData();
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
+
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+            console.error(error);
+            redirect(303, '/auth/error');
+        }
+
+        redirect(303, '/dashboard');
     }
 };
