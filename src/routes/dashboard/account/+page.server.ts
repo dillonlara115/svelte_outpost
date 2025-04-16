@@ -2,6 +2,9 @@ import { fail, redirect, type RequestHandler } from '@sveltejs/kit';
 import { logger } from '$lib/utils/logger';
 import type { Actions } from './$types';
 import Stripe from 'stripe';
+import { error } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+import type { PostgrestError } from '@supabase/supabase-js';
 
 import { PRIVATE_STRIPE_SECRET_KEY } from '$env/static/private';
 import { PUBLIC_URL_DEV, PUBLIC_URL_PROD } from '$env/static/public';
@@ -76,4 +79,53 @@ export const actions: Actions = {
 
 		redirect(303, '/dashboard');
 	}
+};
+
+// Define the expected structure for the user data fetched from the database
+interface DbUser {
+	email: string;
+	roles: {
+		role_name: string;
+	} | null; // roles can be null if no role is assigned or the join fails
+	// Include other fields if necessary
+}
+
+export const load: PageServerLoad = async ({ depends, locals: { supabase, safeGetSession } }) => {
+	depends('supabase:db:user_profile'); // Use a specific dependency key
+
+	const { session, user: authUser } = await safeGetSession();
+
+	if (!session || !authUser) {
+		// User is not logged in, return null user data
+		return { user: null };
+	}
+
+	// Fetch the user profile from your 'users' table, joining with 'roles'
+	const { data: profileData, error: dbError } = await supabase
+		.from('users')
+		.select(`
+			email,
+			roles (
+				role_name
+			)
+		`)
+		.eq('id', authUser.id)
+		.returns<DbUser[]>() // Specify the expected return type
+		.single();
+
+	if (dbError) {
+		console.error('Error fetching user profile:', (dbError as PostgrestError).message || dbError);
+		// You might want to throw an error or return a specific state
+		// For now, return the authUser data without profile info
+		return { user: { ...authUser, role: null } }; // Add role as null
+	}
+
+	// Combine the auth user data with the fetched profile data (especially the role)
+	const fullUserData = {
+		...authUser,
+		// Use optional chaining in case profileData or roles is null/undefined
+		role: profileData?.roles?.role_name || null
+	};
+
+	return { user: fullUserData };
 };

@@ -3,7 +3,8 @@
 
    export let data: PageData;
    
-   $: ({ user } = data);
+   // The user object from PageData now includes the role fetched in +page.server.ts
+   $: user = data.user;
 
    async function openCustomerPortal() {
     const response = await fetch('/dashboard/account', { method: 'POST' });
@@ -25,8 +26,8 @@
            <div class="mb-6">
                <h2 class="text-xl font-semibold mb-2">Profile Information</h2>
                <p class="text-gray-600">Email: {user.email}</p>
-               <p class="text-gray-600">Last Sign In: {new Date(user.last_sign_in_at).toLocaleString()}</p>
-               <p class="text-gray-600">Role: {user.role_name || 'No role assigned'}</p>
+               <p class="text-gray-600">Last Sign In: {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : 'N/A'}</p>
+               <p class="text-gray-600">Role: {user.role || 'No role assigned'}</p>
            </div>
 
            <div class="mb-6">
