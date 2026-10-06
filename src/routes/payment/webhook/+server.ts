@@ -5,7 +5,7 @@ import {
 } from '$env/static/private';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import logger from '$lib/utils/logger';
-import { supabase } from '$lib/supabaseClient';
+import { supabaseAdmin } from '$lib/server/supabaseAdmin';
 
 const roleMapping = {
 	'price_1QjVoaB8sVzGezu0kfetCOuV': 'e9fee1d7-17ff-4b62-81ec-1fa8ac7332ec', // Standard Plan (dev)
@@ -127,7 +127,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 
 		// Update the user's role and limits
-		const { error: updateError } = await supabase
+		const { error: updateError } = await supabaseAdmin
 			.from('users')
 			.update({
 				role_id: userRole,

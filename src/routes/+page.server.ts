@@ -2,6 +2,7 @@ import { fail, redirect, type RequestHandler } from '@sveltejs/kit';
 import { logger } from '$lib/utils/logger';
 import type { Actions } from './$types';
 import Stripe from 'stripe';
+import { supabaseAdmin } from '$lib/server/supabaseAdmin';
 
 import { PRIVATE_STRIPE_SECRET_KEY } from '$env/static/private';
 import { PUBLIC_URL_DEV, PUBLIC_URL_PROD } from '$env/static/public';
@@ -9,7 +10,7 @@ import { PUBLIC_URL_DEV, PUBLIC_URL_PROD } from '$env/static/public';
 const stripe = new Stripe(PRIVATE_STRIPE_SECRET_KEY);
 
 export const actions: Actions = {
-    signup: async ({ request, locals: { supabase } }) => {
+    signup: async ({ request }) => {
         let sessionUrl: string | null = '';
         let error: string = '';
 
@@ -24,7 +25,7 @@ export const actions: Actions = {
 
         try {
             // Step 1: Check if user already exists in Supabase
-            const { data: existingUser, error: fetchError } = await supabase
+            const { data: existingUser, error: fetchError } = await supabaseAdmin
                 .from('users')
                 .select('id, stripe_customer_id')
                 .eq('email', email)
@@ -43,13 +44,13 @@ export const actions: Actions = {
 
                 if (existingUser) {
                     // If user exists in Supabase, update stripe_customer_id
-                    await supabase
+                    await supabaseAdmin
                         .from('users')
                         .update({ stripe_customer_id: stripeCustomerId })
                         .eq('id', existingUser.id);
                 } else {
                     // If user doesn't exist, create one (this assumes you want to manually insert it)
-                    const { data: newUser, error: createError } = await supabase
+                    const { data: newUser, error: createError } = await supabaseAdmin
                         .from('users')
                         .insert([{ email, stripe_customer_id: stripeCustomerId }]);
 
